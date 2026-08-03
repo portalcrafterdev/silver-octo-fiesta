@@ -1,68 +1,89 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# IDURAR ERP CRM — Frontend
 
-## Available Scripts
+The React client for IDURAR ERP CRM. Built with **Vite 5**, **React 18**, **Ant Design 5** and **Redux Toolkit**, it talks to the Express API in [`../backend`](../backend) over `/api`.
 
-In the project directory, you can run:
+## Requirements
 
-### `yarn start`
+- Node.js **20.9.0**
+- npm **10.2.4**
+- The backend running on `http://localhost:8888` (see the [root README](../README.md))
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Getting started
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+```bash
+npm install
+npm run dev
+```
 
-### `yarn test`
+The app is served on [http://localhost:3000](http://localhost:3000). Vite proxies every `/api` request to the backend, so no CORS setup is needed in development. Edits hot-reload, and lint errors appear in the terminal.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Available scripts
 
-### `yarn build`
+### `npm run dev`
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Starts the Vite dev server on port 3000 with HMR, proxying `/api` to `http://localhost:8888`.
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### `npm run dev:remote`
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Same dev server, but proxies the API to `VITE_BACKEND_SERVER` instead of localhost. Use it to run the UI against a deployed backend.
 
-### `yarn eject`
+### `npm run build`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Builds the production bundle into `dist/`. Assets are minified and filenames are hashed for cache-busting.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### `npm run preview`
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Serves the contents of `dist/` locally so you can check a production build before deploying.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### `npm run lint`
 
-## Learn More
+Runs ESLint across `.js` / `.jsx` sources with `--max-warnings 0`, so any warning fails the run. Formatting is handled by Prettier (`.prettierrc`).
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Environment variables
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Create a `.env` in this directory (`temp.env` is the template). Vite only exposes variables prefixed with `VITE_`.
 
-### Code Splitting
+| Variable              | Description                                                             |
+| --------------------- | ----------------------------------------------------------------------- |
+| `VITE_BACKEND_SERVER` | Backend base URL, used in production builds and by `npm run dev:remote` |
+| `VITE_FILE_BASE_URL`  | Base URL for uploaded files and images                                  |
+| `PROD`                | Set to `true` for production builds                                     |
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
+All API endpoints are derived from these in [src/config/serverApiConfig.js](src/config/serverApiConfig.js).
 
-### Analyzing the Bundle Size
+## Project structure
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
+```
+src/
+  apps/         IdurarOs + ErpApp shells, header and navigation
+  auth/         auth service and session handling
+  components/   shared UI — DataTable, CrudModal, SelectAsync, SidePanel…
+  config/       API base URLs and auth token name
+  context/      app, crud, erp and profile context providers
+  forms/        entity forms (Customer, Payment, Tax, Currency, Admin…)
+  hooks/        useFetch, useOnFetch, useDebounce, useResponsive, useMail…
+  layout/       Auth, Crud, Dashboard, Erp, Profile and Settings layouts
+  locale/       localization provider, antd locales, translations
+  modules/      feature modules — Crud, ErpPanel, Invoice, Payment, Quote,
+                Dashboard, Auth, Profile, Setting
+  pages/        routed pages — Invoice, Payment, Customer, Settings, auth
+  redux/        Redux Toolkit store, slices (auth, crud, erp, settings), persistence
+  request/      axios instance, error/success handlers, status messages
+  router/       AppRouter, AuthRouter and route definitions
+  settings/     app settings hooks (useDate, useMoney)
+  style/        global styles, theme partials and images
+  utils/        calculations, currency/country lists, tag colors, helpers
+```
 
-### Making a Progressive Web App
+`@` is aliased to `src/`, so imports look like `import { erp } from '@/redux/erp/actions'`.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
+## Notes
 
-### Advanced Configuration
+- State that must survive a reload (auth session, settings) is persisted via `src/redux/storePersist.js`.
+- All HTTP calls go through `src/request/request.js`, which attaches credentials and funnels errors into a single notification handler.
+- Adding a new entity screen usually means: a module under `src/modules`, a form in `src/forms`, a page in `src/pages`, and a route in `src/router/routes.jsx`.
+- Money and date formatting follow the company settings loaded from the API — use `useMoney()` and `useDate()` from `src/settings` rather than formatting inline.
 
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
+## License
 
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+GNU Affero General Public License v3.0 — see [LICENSE](../LICENSE).
