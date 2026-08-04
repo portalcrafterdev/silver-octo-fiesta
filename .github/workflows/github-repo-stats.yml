@@ -1,10 +1,10 @@
 name: github-repo-stats
 
+# PAUSED: inherited from the upstream fork. The daily schedule is disabled;
+# run manually only. To re-enable, restore:
+#   schedule:
+#     - cron: "50 23 * * *"
 on:
-  schedule:
-    # Run this once per day, towards the end of the day for keeping the most
-    # recent data point most meaningful (hours are interpreted in UTC).
-    - cron: "50 23 * * *"
   workflow_dispatch: # Allow for running this manually.
 
 jobs:

@@ -1,11 +1,14 @@
 # This workflow was added by CodeSee. Learn more at https://codesee.io/
 # This is v2.0 of this workflow file
+# PAUSED: inherited from the upstream fork. Automatic triggers (push to master
+# and pull_request_target) are disabled; run manually only. To re-enable, restore:
+#   push:
+#     branches:
+#       - master
+#   pull_request_target:
+#     types: [opened, synchronize, reopened]
 on:
-  push:
-    branches:
-      - master
-  pull_request_target:
-    types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 name: CodeSee
 
